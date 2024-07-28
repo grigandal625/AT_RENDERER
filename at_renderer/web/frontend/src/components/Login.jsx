@@ -7,7 +7,7 @@ export default () => {
         <Layout>
             <Layout.Header>
                 <Typography.Title style={{ margin: 0, padding: 15, color: "white" }} level={3}>
-                    Средства визуализации пользовательских интерфесйсов
+                    Средства управления визуализацией пользовательских интерфейсов
                 </Typography.Title>
             </Layout.Header>
             <Layout.Content>

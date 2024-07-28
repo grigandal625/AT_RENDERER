@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "at-renderer"
-version = "0.1.0"
+version = "0.1.dev0"
 description = ""
 authors = ["grigadnal625 <grigandal625@gmail.com>"]
 readme = "README.md"
+exclude = ["at_renderer/web/frontend/node_modules", "at_renderer/web/frontend/node_modules/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
