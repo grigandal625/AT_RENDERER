@@ -1,12 +1,14 @@
 from at_config.core.at_config_handler import ATComponentConfig
+
 from at_queue.core.at_component import ATComponent
 from at_queue.core.session import ConnectionParameters
 from at_queue.utils.decorators import authorized_method
-from typing import Dict, Union, TYPE_CHECKING
+
 from at_renderer.core.types import Page, PageDict
 from at_renderer.web.models import PageDict
 
 import json
+from typing import Dict, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from at_renderer.web.server import ConnectionManager
@@ -29,7 +31,7 @@ class ATRenderer(ATComponent):
 
         res = self.pages[auth_token].__dict__
         await self.websocket_manager.send_message(auth_token, json.dumps(res))
-        
+
         return True
 
     async def check_configured(self, *args, auth_token: str = None, **kwargs) -> bool:
