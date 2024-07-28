@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "at-renderer"
+version = "0.1.0"
+description = ""
+authors = ["grigadnal625 <grigandal625@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.111.1"
+aio-pika = "^9.4.2"
+hypercorn = "^0.17.3"
+at-queue = {git = "https://github.com/grigandal625/AT_QUEUE.git", rev = "master"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
