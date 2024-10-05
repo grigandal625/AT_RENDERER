@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 
 class ColDict(BaseModel):
     src: str
+    frame_id: str
     props: Union[Dict, None] = None
 
 class RowDict(BaseModel):
@@ -37,6 +38,7 @@ class FetchDict(BaseModel):
     type: LinkFetchType = Field(default="fetch")
     url: str
     options: Union[Dict, None] = None
+    framedata_field: Union[str, None] = None
     label: str
     props: Union[Dict, None] = None
 

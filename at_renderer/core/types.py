@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Col:
     src: str
+    frame_id: str
     props: Any = None
 
 
@@ -32,6 +33,7 @@ class Fetch:
     url: str
     label: str
     options: Any = None
+    framedata_field: Union[str, None] = None
     props: Any = None
 
 
@@ -69,6 +71,7 @@ class FetchDict(TypedDict):
     url: str
     label: str
     options: Union[dict, None] = None
+    framedata_field: Union[str, None] = None
     props: Union[dict, None] = None
 
 class PanelDict(TypedDict):

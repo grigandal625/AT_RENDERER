@@ -1,6 +1,7 @@
 import { Layout, Row, Col, Skeleton, Typography, Menu, message, Empty, Spin } from "antd";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import Panel from "./panel/Panel";
 
 const getPage = async (authToken, setPage, setNoPage) => {
     const url = process.env.REACT_APP_API_URL || "";
@@ -23,7 +24,7 @@ const getPage = async (authToken, setPage, setNoPage) => {
 const EmptyPage = () => {
     const [_, setParams] = useSearchParams();
     return (
-        <Empty image={<Spin style={{marginTop: 40}} size="large" />} description="Конфигурация интерфейса не задана, ожидайте">
+        <Empty image={<Spin style={{ marginTop: 40 }} size="large" />} description="Конфигурация интерфейса не задана, ожидайте">
             <Typography.Link onClick={() => setParams({})}>Выйти</Typography.Link>
         </Empty>
     );
@@ -44,7 +45,7 @@ const NoPage = () => (
     </Layout>
 );
 
-const LoadinPage = () => (
+const LoadingPage = () => (
     <Layout>
         <Layout.Header>
             <Typography.Title style={{ margin: 0, padding: 15, color: "white" }} level={3}>
@@ -59,10 +60,35 @@ const LoadinPage = () => (
     </Layout>
 );
 
-export default () => {
+const FrameRow = ({ row }) => {
+    if (!row || !row.cols) {
+        return <></>;
+    }
+
+    return (
+        <Row {...row.props}>
+            {row.cols.map((col) => (
+                <Col {...col.props}>
+                    <iframe style={{ borderWidth: 1, padding: 0 }} height={"100%"} width={"100%"} src={col.src} id={col.frame_id} />
+                </Col>
+            ))}
+        </Row>
+    );
+};
+
+const Frames = ({ grid }) => {
+    if (!grid?.rows?.length) {
+        return <EmptyPage />;
+    }
+
+    return grid.rows.map((row) => <FrameRow row={row} />);
+};
+
+export default ({ frames, setFrames }) => {
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(null);
     const [noPage, setNoPage] = useState(false);
+
     const wsRef = useRef();
 
     useEffect(() => {
@@ -92,100 +118,49 @@ export default () => {
             setParams({});
         };
     }, [params]);
-    debugger;
+
+    useEffect(() => {
+        if (!page?.grid?.rows?.length || noPage) {
+            setFrames({});
+        } else {
+            const newFrames = Object.fromEntries(
+                page.grid.rows.reduce((accumulator, row) => {
+                    const allRowFrames = (row.cols || []).map((col) => [col.frame_id, col.src]);
+                    return [...accumulator, ...allRowFrames];
+                }, [])
+            );
+
+            setFrames(newFrames);
+        }
+    }, [page, noPage]);
+
+    const header = page?.header ? (
+        <Layout.Header>
+            <Panel panel={page.header} />
+        </Layout.Header>
+    ) : (
+        <></>
+    );
+
+    const footer = page?.footer ? (
+        <Layout.Footer>
+            <Panel panel={page.footer} frames={frames} />
+        </Layout.Footer>
+    ) : (
+        <></>
+    );
+
     return noPage ? (
         <NoPage />
     ) : page ? (
         <Layout>
-            {page?.header ? (
-                <Layout.Header>
-                    {
-                        <Row>
-                            <Col>
-                                <Typography.Title style={{ margin: 0, padding: 15, color: "white" }} level={3}>
-                                    {page?.header?.label || ""}
-                                </Typography.Title>
-                            </Col>
-                            <Col flex="auto">
-                                <Menu
-                                    theme="dark"
-                                    mode="horizontal"
-                                    items={page?.header?.links?.map((link, i) => ({
-                                        key: i,
-                                        label:
-                                            link.type === "href" ? (
-                                                <a {...link?.props} href={link?.href}>
-                                                    {link?.label}
-                                                </a>
-                                            ) : link.type === "fetch" ? (
-                                                <div
-                                                    onClick={async () => fetch(link?.url, link?.options)}
-                                                    {...link?.props}
-                                                >
-                                                    {link?.label}
-                                                </div>
-                                            ) : (
-                                                <div>{link?.label}</div>
-                                            ),
-                                    }))}
-                                />
-                            </Col>
-                        </Row>
-                    }
-                </Layout.Header>
-            ) : (
-                <></>
-            )}
+            {header}
             <Layout.Content style={{ height: "100%" }}>
-                {page?.grid && page?.grid?.rows?.length ? (
-                    page?.grid?.rows?.map((row) => (
-                        <Row {...row?.props}>
-                            {row?.cols?.map((col) => (
-                                <Col {...col?.props}>
-                                    <iframe
-                                        style={{ borderWidth: 1, padding: 0 }}
-                                        height={"100%"}
-                                        width={"100%"}
-                                        src={col?.src}
-                                    />
-                                </Col>
-                            ))}
-                        </Row>
-                    ))
-                ) : (
-                    <EmptyPage />
-                )}
+                <Frames grid={page.grid} />
             </Layout.Content>
-            {page?.footer ? (
-                <Layout.Footer>
-                    {
-                        <Row>
-                            <Col>
-                                <Typography.Title style={{ margin: 0, padding: 15 }} level={3}>
-                                    {page?.footer?.label || ""}
-                                </Typography.Title>
-                            </Col>
-                            <Col>
-                                <Menu
-                                    mode="horizontal"
-                                    items={page?.footer?.links?.map((link, i) => ({
-                                        key: i,
-                                        label: (
-                                            <a {...link?.props} href={link?.href}>
-                                                {link?.label}
-                                            </a>
-                                        ),
-                                    }))}
-                                />
-                            </Col>
-                        </Row>
-                    }
-                </Layout.Footer>
-            ) : (
-                <></>
-            )}
+            {footer}
         </Layout>
     ) : (
-        <LoadinPage />
+        <LoadingPage />
     );
 };
