@@ -1,10 +1,13 @@
 import asyncio
 from typing import Dict
+
+from at_queue.core.exceptions import ATQueueException
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from at_renderer.web.models import PageDict
+from at_renderer.web.models import PageDict, ExecMetod, ExecMethodResult
 from at_queue.core.session import ConnectionParameters
 import os
 from hypercorn.config import Config
@@ -91,6 +94,16 @@ async def page(*, auth_token: str) -> PageDict:
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_425_TOO_EARLY, detail=str(e))
     return page
+
+
+@app.post('/api/exec_method')
+async def exec_method(data: ExecMetod) -> ExecMethodResult:
+    renderer = await get_renderer()
+    try:
+        result = await renderer.exec_external_method(data.component, data.method, data.kwargs, auth_token=data.auth_token)
+    except ATQueueException as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e.__dict__)
+    return {'result': result}
 
 
 @app.get('/{path:path}')

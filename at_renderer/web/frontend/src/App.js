@@ -1,21 +1,26 @@
 import { useSearchParams, createBrowserRouter, RouterProvider } from "react-router-dom";
 import Grid from "./components/Grid";
 import Login from "./components/Login";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const Main = () => {
     const [params, _] = useSearchParams();
     const [frames, setFrames] = useState({});
+    const messageListener = useRef();
 
     useEffect(() => {
-        window.addEventListener("message", (e) => {
+        if (messageListener.current) {
+            window.removeEventListener("message", messageListener.current);
+        }
+        messageListener.current = (e) => {
             if (e.data.frameId && Object.keys(frames).includes(e.data.frameId)) {
                 const newFrames = { ...frames };
                 newFrames[e.data.frameId] = e.data.url;
                 setFrames(newFrames);
             }
-        });
-    }, []);
+        };
+        window.addEventListener("message", messageListener.current);
+    }, [frames, setFrames]);
 
     if (params.get("auth_token")) {
         return <Grid frames={frames} setFrames={setFrames} />;

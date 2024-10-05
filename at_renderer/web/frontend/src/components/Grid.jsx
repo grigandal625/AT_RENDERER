@@ -69,7 +69,7 @@ const FrameRow = ({ row }) => {
         <Row {...row.props}>
             {row.cols.map((col) => (
                 <Col {...col.props}>
-                    <iframe style={{ borderWidth: 1, padding: 0 }} height={"100%"} width={"100%"} src={col.src} id={col.frame_id} />
+                    <iframe style={{ borderWidth: 0, padding: 0 }} height={"100%"} width={"100%"} src={col.src} id={col.frame_id} />
                 </Col>
             ))}
         </Row>
@@ -84,11 +84,11 @@ const Frames = ({ grid }) => {
     return grid.rows.map((row) => <FrameRow row={row} />);
 };
 
-export default ({ frames, setFrames }) => {
+export default ({frames, setFrames}) => {
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(null);
     const [noPage, setNoPage] = useState(false);
-
+    
     const wsRef = useRef();
 
     useEffect(() => {
@@ -120,7 +120,7 @@ export default ({ frames, setFrames }) => {
     }, [params]);
 
     useEffect(() => {
-        if (!page?.grid?.rows?.length || noPage) {
+        if (!page?.grid?.rows?.length) {
             setFrames({});
         } else {
             const newFrames = Object.fromEntries(
@@ -132,11 +132,11 @@ export default ({ frames, setFrames }) => {
 
             setFrames(newFrames);
         }
-    }, [page, noPage]);
+    }, [page]);
 
     const header = page?.header ? (
         <Layout.Header>
-            <Panel panel={page.header} />
+            <Panel panel={page.header} frames={frames} />
         </Layout.Header>
     ) : (
         <></>
@@ -153,7 +153,7 @@ export default ({ frames, setFrames }) => {
     return noPage ? (
         <NoPage />
     ) : page ? (
-        <Layout>
+        <Layout style={{ height: "100%" }}>
             {header}
             <Layout.Content style={{ height: "100%" }}>
                 <Frames grid={page.grid} />

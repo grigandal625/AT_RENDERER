@@ -1,5 +1,6 @@
-from typing import Dict, List, Union, TypedDict, Any
+from typing import List, Union, TypedDict, Any
 from dataclasses import dataclass
+
 
 @dataclass
 class Col:
@@ -35,12 +36,23 @@ class Fetch:
     options: Any = None
     framedata_field: Union[str, None] = None
     props: Any = None
+    
+    
+@dataclass
+class ComponentMethod:
+    type: str
+    label: str
+    component: str
+    method: str
+    framedata_field: Union[str, None] = None
+    kwargs: Any = None
+    props: Union[dict, None] = None
 
 
 @dataclass
 class Panel:
     label: str
-    links: List[Union[Link, Fetch]]
+    links: List[Union[Link, Fetch, ComponentMethod]]
 
 
 @dataclass
@@ -72,6 +84,15 @@ class FetchDict(TypedDict):
     label: str
     options: Union[dict, None] = None
     framedata_field: Union[str, None] = None
+    props: Union[dict, None] = None
+
+class ComponentMethodDict(TypedDict):
+    type: str
+    label: str
+    component: str
+    method: str
+    framedata_field: Union[str, None] = None
+    kwargs: Union[dict, None] = None
     props: Union[dict, None] = None
 
 class PanelDict(TypedDict):

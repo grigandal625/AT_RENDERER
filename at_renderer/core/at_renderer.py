@@ -5,7 +5,6 @@ from at_queue.core.session import ConnectionParameters
 from at_queue.utils.decorators import authorized_method
 
 from at_renderer.core.types import Page, PageDict
-from at_renderer.web.models import PageDict
 
 import json
 from typing import Dict, Union, TYPE_CHECKING
