@@ -63,6 +63,7 @@ class Page:
 
 class ColDict(TypedDict):
     src: str
+    frame_id: str
     props: Union[dict, None] = None
 
 class RowDict(TypedDict):
