@@ -60,6 +60,29 @@ class PanelDict(BaseModel):
     label: str
     links: List[Union[LinkDict, FetchDict, ComponentMethodDict]]
 
+
+class HandlerFetchDict(BaseModel):
+    type: LinkFetchType = Field(default="fetch")
+    url: str
+    frame_id: str
+    test: str
+    options: Optional[Any] = Field(None)
+    framedata_field: Optional[str] = Field(None)
+    label: str
+    props: Optional[Any] = Field(None)
+    
+    
+class HandlerComponentMethodDict(BaseModel):
+    type: LinkComponentMethodType = Field(default="component_method")
+    frame_id: str
+    test: str
+    component: str
+    method: str
+    framedata_field: Optional[str] = Field(None)
+    kwargs: Optional[Any] = Field(None)
+    props: Optional[Any] = Field(None)
+
+
 class PageDict(BaseModel):
     grid: GridDict
     header: Optional[PanelDict] = Field(None)

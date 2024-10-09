@@ -84,11 +84,12 @@ const Frames = ({ grid }) => {
     return grid.rows.map((row) => <FrameRow row={row} />);
 };
 
-export default ({frames, setFrames}) => {
+export default ({ frames, setFrames }) => {
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(null);
     const [noPage, setNoPage] = useState(false);
-    
+    const search = params;
+
     const wsRef = useRef();
 
     useEffect(() => {
@@ -97,6 +98,42 @@ export default ({frames, setFrames}) => {
             getPage(authToken, setPage, setNoPage);
         }
     }, [params]);
+
+    useEffect(() => {
+        if (page?.handlers?.length) {
+            page.handlers.forEach((handler) => {
+                const frameId = handler.frame_id;
+                const frameSrc = frames[frameId];
+
+                const tester = new RegExp(handler.test);
+                if (tester.test(frameSrc)) {
+                    if (handler.type === "fetch") {
+                        const { options, framedata_field, url } = handler;
+                        const body = JSON.parse(options?.body || "{}");
+                        if (framedata_field) {
+                            body[framedata_field] = frames;
+                        }
+                        fetch(url, { ...options, body: JSON.stringify(body) });
+                    } else if (handler.type === "component_method") {
+                        const url = process.env.REACT_APP_API_URL || "";
+                        const body = { ...handler };
+                        body.auth_token = search.get("auth_token");
+                        if (handler.framedata_field) {
+                            body.kwargs = body.kwargs || {};
+                            body.kwargs[handler.framedata_field] = frames;
+                        }
+                        fetch(`${url}/api/exec_method`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(body),
+                        });
+                    }
+                }
+            });
+        }
+    }, [frames, page]);
 
     useEffect(() => {
         if (wsRef.current) {
@@ -136,7 +173,7 @@ export default ({frames, setFrames}) => {
 
     const header = page?.header ? (
         <Layout.Header>
-            <Panel panel={page.header} frames={frames} />
+            <Panel panel={page.header} frames={frames} textColor="white"/>
         </Layout.Header>
     ) : (
         <></>
@@ -144,7 +181,7 @@ export default ({frames, setFrames}) => {
 
     const footer = page?.footer ? (
         <Layout.Footer>
-            <Panel panel={page.footer} frames={frames} />
+            <Panel panel={page.footer} frames={frames} textColor="black" />
         </Layout.Footer>
     ) : (
         <></>

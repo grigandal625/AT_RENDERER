@@ -16,7 +16,7 @@ const PanelLink = ({ type, ...props }) => {
     return <Component {...props} />;
 };
 
-export default ({ panel, frames }) => {
+export default ({ panel, frames, textColor }) => {
     const [ search, _ ] = useSearchParams();
     const onMenuItemClick = ({ key }) => {
         const link = panel.links[parseInt(key)];
@@ -48,7 +48,7 @@ export default ({ panel, frames }) => {
     return (
         <Row>
             <Col>
-                <Typography.Title style={{ margin: 0, padding: 15, color: "white" }} level={3}>
+                <Typography.Title style={{ margin: 0, padding: 15, color: textColor }} level={3}>
                     {panel.label || ""}
                 </Typography.Title>
             </Col>

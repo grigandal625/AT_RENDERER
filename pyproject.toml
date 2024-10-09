@@ -12,6 +12,7 @@ fastapi = "^0.111.1"
 aio-pika = "^9.4.2"
 hypercorn = "^0.17.3"
 at-queue = {git = "https://github.com/grigandal625/AT_QUEUE.git", rev = "master"}
+schema = "^0.7.7"
 
 [build-system]
 requires = ["poetry-core"]

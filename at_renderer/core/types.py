@@ -56,10 +56,34 @@ class Panel:
 
 
 @dataclass
+class HandlerFetch:
+    type: str
+    frame_id: str
+    test: str
+    url: str
+    options: Any = None
+    framedata_field: Union[str, None] = None
+    props: Any = None
+    
+    
+@dataclass
+class HandlerComponentMethod:
+    type: str
+    frame_id: str
+    test: str
+    component: str
+    method: str
+    framedata_field: Union[str, None] = None
+    kwargs: Any = None
+    props: Union[dict, None] = None
+
+
+@dataclass
 class Page:
     grid: Grid
     header: Union[Panel, None] = None
     footer: Union[Panel, None] = None
+    handlers: Union[List[Union[HandlerFetch, HandlerComponentMethod]]] = None
 
 class ColDict(TypedDict):
     src: str
@@ -100,7 +124,29 @@ class PanelDict(TypedDict):
     label: str
     links: List[Union[LinkDict, FetchDict]]
 
+
+class HandlerFetchDict(TypedDict):
+    type: str
+    frame_id: str
+    test: str
+    url: str
+    options: Union[dict, None] = None
+    framedata_field: Union[str, None] = None
+    props: Union[dict, None] = None
+
+class HandlerComponentMethodDict(TypedDict):
+    type: str
+    frame_id: str
+    test: str
+    component: str
+    method: str
+    framedata_field: Union[str, None] = None
+    kwargs: Union[dict, None] = None
+    props: Union[dict, None] = None
+
+
 class PageDict(TypedDict):
     grid: GridDict
     header: PanelDict
     footer: PanelDict
+    handlers: Union[List[Union[HandlerFetchDict, HandlerComponentMethodDict]], None] = None
