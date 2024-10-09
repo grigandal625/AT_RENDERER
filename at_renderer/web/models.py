@@ -59,6 +59,7 @@ class ComponentMethodDict(BaseModel):
 class PanelDict(BaseModel):
     label: str
     links: List[Union[LinkDict, FetchDict, ComponentMethodDict]]
+    subtitle: Optional[str] = Field(None)
 
 
 class HandlerFetchDict(BaseModel):
@@ -86,6 +87,7 @@ class HandlerComponentMethodDict(BaseModel):
 class PageDict(BaseModel):
     grid: GridDict
     header: Optional[PanelDict] = Field(None)
+    control: Optional[PanelDict] = Field(None)
     footer: Optional[PanelDict] = Field(None)
 
 class ExecMetod(BaseModel):

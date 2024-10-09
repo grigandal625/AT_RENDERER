@@ -1,6 +1,7 @@
 import { Layout, Row, Col, Skeleton, Typography, Menu, message, Empty, Spin } from "antd";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import Control from "./panel/Control";
 import Panel from "./panel/Panel";
 
 const getPage = async (authToken, setPage, setNoPage) => {
@@ -140,7 +141,7 @@ export default ({ frames, setFrames }) => {
             wsRef.current.close();
         }
         const authToken = params.get("auth_token");
-        const url = process.env.REACT_APP_WS_URL || "";
+        const url = process.env.REACT_APP_WS_URL || "ws://" + window.location.host;
         const ws = new WebSocket(`${url}/api/ws/?auth_token=${authToken}`);
         wsRef.current = ws;
         ws.onmessage = (event) => {
@@ -173,8 +174,16 @@ export default ({ frames, setFrames }) => {
 
     const header = page?.header ? (
         <Layout.Header>
-            <Panel panel={page.header} frames={frames} textColor="white"/>
+            <Panel panel={page.header} frames={frames} textColor="white" />
         </Layout.Header>
+    ) : (
+        <></>
+    );
+
+    const control = page?.control ? (
+        <div style={{ padding: 20, textAlign: "center" }}>
+            <Control panel={page.control} frames={frames} />
+        </div>
     ) : (
         <></>
     );
@@ -192,6 +201,7 @@ export default ({ frames, setFrames }) => {
     ) : page ? (
         <Layout style={{ height: "100%" }}>
             {header}
+            {control}
             <Layout.Content style={{ height: "100%" }}>
                 <Frames grid={page.grid} />
             </Layout.Content>

@@ -4,6 +4,7 @@ from typing import Dict
 from at_queue.core.exceptions import ATQueueException
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, status, Request
+from uvicorn import Config as UviConfig, Server
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -114,21 +115,25 @@ async def index(request: Request):
 async def main():
     args = get_args()
     renderer = await get_renderer()
-    
+
     loop = asyncio.get_event_loop()
     renderer_task = None
     if not renderer.started:
         renderer_task = loop.create_task(renderer.start())
-    
+
     server_host = args.get('server_host', '127.0.0.1')
     server_port = args.get('server_port', 8000)
 
     if not isinstance(server_port, int):
         server_port = int(server_port)
 
-    config = Config()
-    config.bind = [f"{server_host}:{server_port}"]
-    loop.create_task(serve(app, config=config))
+    # config = Config()
+    # config.bind = [f"{server_host}:{server_port}"]
+    # loop.create_task(serve(app, config=config))
+
+    config = UviConfig(app, server_host, server_port, loop=loop, ws='websockets')
+    server = Server(config=config)
+    loop.create_task(server.serve())
 
     try:
         if not os.path.exists('/var/run/at_renderer/'):

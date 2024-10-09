@@ -47,12 +47,12 @@ export default ({ panel, frames, textColor }) => {
 
     return (
         <Row>
-            <Col>
-                <Typography.Title style={{ margin: 0, padding: 15, color: textColor }} level={3}>
+            <Col flex={panel?.links?.length ? undefined : "auto"}>
+                <Typography.Title style={{ margin: 0, padding: 15, color: textColor, textAlign: panel?.links?.length ? "start" : "center" }} level={4}>
                     {panel.label || ""}
                 </Typography.Title>
             </Col>
-            <Col flex="auto">
+            <Col flex={panel?.links?.length ? "auto" : undefined}>
                 <Menu
                     theme="dark"
                     mode="horizontal"
