@@ -17,7 +17,7 @@ const PanelLink = ({ type, ...props }) => {
 };
 
 export default ({ panel, frames, textColor }) => {
-    const [ search, _ ] = useSearchParams();
+    const [search, _] = useSearchParams();
     const onMenuItemClick = ({ key }) => {
         const link = panel.links[parseInt(key)];
         if (link.type === "fetch") {
@@ -29,7 +29,7 @@ export default ({ panel, frames, textColor }) => {
             fetch(url, { ...options, body: JSON.stringify(body) });
         } else if (link.type === "component_method") {
             const url = process.env.REACT_APP_API_URL || "";
-            const body = {...link};
+            const body = { ...link };
             body.auth_token = search.get("auth_token");
             if (link.framedata_field) {
                 body.kwargs = body.kwargs || {};
@@ -48,7 +48,7 @@ export default ({ panel, frames, textColor }) => {
     return (
         <Row>
             <Col flex={panel?.links?.length ? undefined : "auto"}>
-                <Typography.Title style={{ margin: 0, padding: 15, color: textColor, textAlign: panel?.links?.length ? "start" : "center" }} level={4}>
+                <Typography.Title style={{ margin: 0, padding: 15, color: textColor }} level={4}>
                     {panel.label || ""}
                 </Typography.Title>
             </Col>

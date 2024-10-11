@@ -181,7 +181,7 @@ export default ({ frames, setFrames }) => {
     );
 
     const control = page?.control ? (
-        <div style={{ padding: 20, textAlign: "center" }}>
+        <div style={{ padding: 20 }}>
             <Control panel={page.control} frames={frames} />
         </div>
     ) : (

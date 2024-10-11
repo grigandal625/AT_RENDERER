@@ -38,6 +38,7 @@ class LinkDict(BaseModel):
     href: str
     label: str
     props: Optional[Any] = Field(None)
+    tags: Optional[List[str]] = Field(default=None)
 
 class FetchDict(BaseModel):
     type: LinkFetchType = Field(default="fetch")
@@ -46,6 +47,7 @@ class FetchDict(BaseModel):
     framedata_field: Optional[str] = Field(None)
     label: str
     props: Optional[Any] = Field(None)
+    tags: Optional[List[str]] = Field(default=None)
     
 class ComponentMethodDict(BaseModel):
     type: LinkComponentMethodType = Field(default="component_method")
@@ -55,6 +57,7 @@ class ComponentMethodDict(BaseModel):
     framedata_field: Optional[str] = Field(None)
     kwargs: Optional[Any] = Field(None)
     props: Optional[Any] = Field(None)
+    tags: Optional[List[str]] = Field(default=None)
 
 class PanelDict(BaseModel):
     label: str
