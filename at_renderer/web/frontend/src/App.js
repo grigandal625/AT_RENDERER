@@ -2,6 +2,7 @@ import { useSearchParams, createBrowserRouter, RouterProvider } from "react-rout
 import Grid from "./components/Grid";
 import Login from "./components/Login";
 import { useEffect, useState, useRef } from "react";
+import Docview from "./components/Docview";
 
 const Main = () => {
     const [params, _] = useSearchParams();
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: <Main />,
+    },
+    {
+        path: "/docview",
+        element: <Docview />,
     },
 ]);
 
