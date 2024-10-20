@@ -1,23 +1,29 @@
 import asyncio
+import os
+from pathlib import Path
 from typing import Dict
+from uuid import uuid4
 
 from at_queue.core.exceptions import ATQueueException
-
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, status, Request
-from uvicorn import Config as UviConfig, Server
+from at_queue.core.session import ConnectionParameters
+from fastapi import FastAPI
+from fastapi import HTTPException
+from fastapi import Query
+from fastapi import Request
+from fastapi import status
+from fastapi import WebSocket
+from fastapi import WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from at_renderer.web.models import PageDict, ExecMetod, ExecMethodResult
-from at_queue.core.session import ConnectionParameters
-import os
-from hypercorn.config import Config
-from hypercorn.asyncio import serve
+from uvicorn import Config as UviConfig
+from uvicorn import Server
+
 from at_renderer.core.at_renderer import ATRenderer
 from at_renderer.web.arguments import get_args
-from uuid import uuid4
-from pathlib import Path
-import os
+from at_renderer.web.models import ExecMethodResult
+from at_renderer.web.models import ExecMetod
+from at_renderer.web.models import PageDict
 
 
 CURRENT_FILE_PATH = Path(__file__).resolve()
@@ -36,7 +42,8 @@ app.add_middleware(
 )
 
 templates = Jinja2Templates(directory=os.path.join(CURRENT_FILE_PATH.parent, 'frontend/build'))
-app.mount("/static", StaticFiles(directory=os.path.join(CURRENT_FILE_PATH.parent, "frontend/build/static")), name="static")
+app.mount("/static", StaticFiles(directory=os.path.join(CURRENT_FILE_PATH.parent,
+          "frontend/build/static")), name="static")
 
 
 # WebSocket manager
@@ -62,8 +69,11 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+
+
 class GLOBAL:
     renderer = None
+
 
 async def get_renderer():
     renderer = GLOBAL.renderer
@@ -77,6 +87,7 @@ async def get_renderer():
     GLOBAL.renderer = renderer
     return renderer
 
+
 @app.websocket("/api/ws/")
 async def websocket_endpoint(websocket: WebSocket, auth_token: str = Query(...)):
     session_id = str(uuid4())
@@ -86,6 +97,7 @@ async def websocket_endpoint(websocket: WebSocket, auth_token: str = Query(...))
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(auth_token, session_id)
+
 
 @app.get("/api/page")
 async def page(*, auth_token: str) -> PageDict:

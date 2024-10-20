@@ -35,7 +35,7 @@ import asyncio
 
 async def main():
     connection_parameters = ConnectionParameters('amqp://localhost:5672/') # Параметры подключения к RabbitMQ
-    
+
     inspector = ATRegistryInspector(connection_parameters)
     await inspector.initialize()
     await inspector.register()
@@ -66,6 +66,6 @@ async def main():
     auth_token="default")
 ```
 
-После этого по адресу http://127.0.0.1:8000/?auth_token=default отобразится страница с двумя ё `iframe` на которых загрузятся указанные в полях `"src"` адреса. 
+После этого по адресу http://127.0.0.1:8000/?auth_token=default отобразится страница с двумя ё `iframe` на которых загрузятся указанные в полях `"src"` адреса.
 
 При повторном вызове метода `render_page` изменения в расположении, количестве и содержимого `iframe` произойдут автоматически

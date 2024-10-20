@@ -1,5 +1,6 @@
-from at_renderer.web.server import main 
 import asyncio
+
+from at_renderer.web.server import main
 
 
 if __name__ == '__main__':

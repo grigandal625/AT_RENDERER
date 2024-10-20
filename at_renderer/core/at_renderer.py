@@ -1,16 +1,19 @@
-from at_config.core.at_config_handler import ATComponentConfig
+import json
+from typing import Dict
+from typing import TYPE_CHECKING
+from typing import Union
 
+from at_config.core.at_config_handler import ATComponentConfig
 from at_queue.core.at_component import ATComponent
 from at_queue.core.session import ConnectionParameters
 from at_queue.utils.decorators import authorized_method
 
-from at_renderer.core.types import Page, PageDict
-
-import json
-from typing import Dict, Union, TYPE_CHECKING
+from at_renderer.core.types import Page
+from at_renderer.core.types import PageDict
 
 if TYPE_CHECKING:
     from at_renderer.web.server import ConnectionManager
+
 
 class ATRenderer(ATComponent):
     pages: Dict[str, Page]
