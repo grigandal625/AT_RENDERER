@@ -105,7 +105,7 @@ export default ({ frames, setFrames }) => {
             page.handlers.forEach((handler) => {
                 const frameId = handler.frame_id;
                 const frameSrc = frames[frameId];
-
+                debugger;
                 const tester = new RegExp(handler.test);
                 if (tester.test(frameSrc)) {
                     if (handler.type === "fetch") {
@@ -134,7 +134,7 @@ export default ({ frames, setFrames }) => {
                 }
             });
         }
-    }, [frames, page]);
+    }, [frames]);
 
     useEffect(() => {
         if (wsRef.current) {

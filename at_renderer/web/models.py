@@ -107,6 +107,7 @@ class PageDict(BaseModel):
     header: Optional[PanelDict] = Field(None)
     control: Optional[PanelDict] = Field(None)
     footer: Optional[PanelDict] = Field(None)
+    handlers: Optional[List[Union[HandlerFetchDict, HandlerComponentMethodDict]]] = Field(default=None)
 
 
 class ExecMetod(BaseModel):
