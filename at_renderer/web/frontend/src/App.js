@@ -14,6 +14,7 @@ const Main = () => {
             window.removeEventListener("message", messageListener.current);
         }
         messageListener.current = (e) => {
+            debugger;
             if (e.data.frameId && Object.keys(frames).includes(e.data.frameId) && e.data.type === "urlUpdate") {
                 const newFrames = { ...frames };
                 newFrames[e.data.frameId] = e.data.url;
