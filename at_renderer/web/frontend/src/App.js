@@ -14,10 +14,26 @@ const Main = () => {
             window.removeEventListener("message", messageListener.current);
         }
         messageListener.current = (e) => {
-            if (e.data.frameId && Object.keys(frames).includes(e.data.frameId)) {
+            if (e.data.frameId && Object.keys(frames).includes(e.data.frameId) && e.data.type === "urlUpdate") {
                 const newFrames = { ...frames };
                 newFrames[e.data.frameId] = e.data.url;
                 setFrames(newFrames);
+            }
+            if (e.data.frameId && Object.keys(frames).includes(e.data.frameId) && e.data.type === "action") {
+                const body = {};
+                const url = process.env.REACT_APP_API_URL || "";
+                body.auth_token = params.get("auth_token");
+                body.component = 'ATController';
+                body.method = 'handle_event'
+                body.kwargs = { event: e.data.event, data: e.data.data, frames };
+                fetch(`${url}/api/exec_method`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
+                });
+
             }
         };
         window.addEventListener("message", messageListener.current);
