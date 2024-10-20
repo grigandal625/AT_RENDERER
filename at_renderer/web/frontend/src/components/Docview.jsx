@@ -2,7 +2,6 @@ import CodeEditorItem, { defaultEditorDidMount, defaultEditorOptions } from "../
 import { Form, FloatButton, Button, Empty } from "antd";
 import { EyeOutlined, EditOutlined } from "@ant-design/icons";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default () => {
