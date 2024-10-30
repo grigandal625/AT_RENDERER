@@ -90,7 +90,7 @@ export default ({ frames, setFrames }) => {
     const [page, setPage] = useState(null);
     const [noPage, setNoPage] = useState(false);
     const search = params;
-    const [modal, contextHandler] = Modal.useModal()
+    const [modal, contextHandler] = Modal.useModal();
 
     const wsRef = useRef();
 
@@ -137,20 +137,30 @@ export default ({ frames, setFrames }) => {
         }
     }, [frames]);
 
-    useEffect(() => {
+    const [reconnectAttempts, setReconnectAttempts] = useState(0);
+
+    const connectWebSocket = () => {
         if (wsRef.current) {
             wsRef.current.close();
         }
+
         const authToken = params.get("auth_token");
         const url = process.env.REACT_APP_WS_URL || "ws://" + window.location.host;
         const ws = new WebSocket(`${url}/api/ws/?auth_token=${authToken}`);
         wsRef.current = ws;
+
+        ws.onopen = function () {
+            if (this.OPEN) {
+                message.success("Успешно подключено");
+                setReconnectAttempts(0);
+            }
+        };
+
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log("Received data from server:", data);
             if (data.type === "message") {
-
-                const messageType = ["info", "error", "success", "warning"].includes(data.message_type) ? data.message_type : "info"
+                const messageType = ["info", "error", "success", "warning"].includes(data.message_type) ? data.message_type : "info";
 
                 if (data.modal) {
                     const messageCaller = modal[messageType] || modal.info;
@@ -159,8 +169,8 @@ export default ({ frames, setFrames }) => {
                         title: data.title || "",
                         content: data.message,
                         okText: "Ок",
-                        cancelText: "Закрыть"
-                    })
+                        cancelText: "Закрыть",
+                    });
                 } else {
                     const messageCaller = message[messageType] || message.info;
                     messageCaller(data.message);
@@ -170,10 +180,37 @@ export default ({ frames, setFrames }) => {
                 setPage(data);
             }
         };
+
         ws.onclose = () => {
-            console.log("WebSocket connection closed");
-            message.error("Соединение разорвано");
-            setParams({});
+            wsRef.current = undefined;
+            if (reconnectAttempts < 5) {
+                setTimeout(() => {
+                    setReconnectAttempts(reconnectAttempts + 1);
+                }, 1000);
+            } else {
+                console.log("WebSocket connection closed");
+                message.error("Соединение разорвано");
+                console.error("Max reconnect attempts reached. Giving up.");
+                setParams({});
+            }
+        };
+    };
+
+    useEffect(() => {
+        if (reconnectAttempts > 0 && reconnectAttempts < 5) {
+            message.warning(`Соединение разорвано, попытка переподключиться ${reconnectAttempts}`);
+            console.log(`Reconnecting... Attempt ${reconnectAttempts + 1}`);
+            connectWebSocket();
+        }
+    }, [reconnectAttempts]);
+
+    useEffect(() => {
+        connectWebSocket();
+        // Чистим WebSocket при размонтировании компонента
+        return () => {
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
         };
     }, [params]);
 
@@ -216,20 +253,23 @@ export default ({ frames, setFrames }) => {
         <></>
     );
 
-    return <>{noPage ? (
-        <NoPage />
-    ) : page ? (
-        <Layout style={{ height: "100%" }}>
-            {header}
-            {control}
-            <Layout.Content style={{ height: "100%" }}>
-                <Frames grid={page.grid} />
-            </Layout.Content>
-            {footer}
-        </Layout>
-    ) : (
-        <LoadingPage />
-    )}
-    {contextHandler}
-    </>;
+    return (
+        <>
+            {noPage ? (
+                <NoPage />
+            ) : page ? (
+                <Layout style={{ height: "100%" }}>
+                    {header}
+                    {control}
+                    <Layout.Content style={{ height: "100%" }}>
+                        <Frames grid={page.grid} />
+                    </Layout.Content>
+                    {footer}
+                </Layout>
+            ) : (
+                <LoadingPage />
+            )}
+            {contextHandler}
+        </>
+    );
 };
