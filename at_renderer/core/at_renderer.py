@@ -67,7 +67,8 @@ class ATRenderer(ATComponent):
                 'type': 'message',
                 'message': message,
                 'message_type': message_type,
-                'modal': modal
+                'modal': modal,
+                'title': title,
             }
         ))
         return message
