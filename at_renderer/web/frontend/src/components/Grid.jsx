@@ -1,4 +1,4 @@
-import { Layout, Row, Col, Skeleton, Typography, Menu, message, Empty, Spin } from "antd";
+import { Layout, Row, Col, Skeleton, Typography, Modal, message, Empty, Spin } from "antd";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Control from "./panel/Control";
@@ -90,6 +90,7 @@ export default ({ frames, setFrames }) => {
     const [page, setPage] = useState(null);
     const [noPage, setNoPage] = useState(false);
     const search = params;
+    const [modal, contextHandler] = Modal.useModal()
 
     const wsRef = useRef();
 
@@ -147,8 +148,27 @@ export default ({ frames, setFrames }) => {
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log("Received data from server:", data);
-            setNoPage(false);
-            setPage(data);
+            if (data.type === "message") {
+
+                const messageType = ["info", "error", "success", "warning"].includes(data.message_type) ? data.message_type : "info"
+
+                if (data.modal) {
+                    const messageCaller = modal[messageType] || modal.info;
+
+                    messageCaller({
+                        title: data.title || "",
+                        content: data.message,
+                        okText: "Ок",
+                        cancelText: "Закрыть"
+                    })
+                } else {
+                    const messageCaller = message[messageType] || message.info;
+                    messageCaller(data.message);
+                }
+            } else {
+                setNoPage(false);
+                setPage(data);
+            }
         };
         ws.onclose = () => {
             console.log("WebSocket connection closed");
@@ -196,7 +216,7 @@ export default ({ frames, setFrames }) => {
         <></>
     );
 
-    return noPage ? (
+    return <>{noPage ? (
         <NoPage />
     ) : page ? (
         <Layout style={{ height: "100%" }}>
@@ -209,5 +229,7 @@ export default ({ frames, setFrames }) => {
         </Layout>
     ) : (
         <LoadingPage />
-    );
+    )}
+    {contextHandler}
+    </>;
 };

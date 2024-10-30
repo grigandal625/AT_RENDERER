@@ -52,3 +52,22 @@ class ATRenderer(ATComponent):
         if page is None:
             raise ValueError("No such page for token: %s" % auth_token)
         return page.__dict__
+
+    @authorized_method
+    async def show_message(
+        self,
+        message: str,
+        title: str = "",
+        message_type: str = "info",
+        modal: bool = True,
+        auth_token: str = None
+    ) -> str:
+        await self.websocket_manager.send_message(auth_token, json.dumps(
+            {
+                'type': 'message',
+                'message': message,
+                'message_type': message_type,
+                'modal': modal
+            }
+        ))
+        return message
