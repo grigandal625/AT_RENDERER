@@ -125,6 +125,16 @@ async def index(request: Request):
 
 
 async def main():
+
+    try:
+        if not os.path.exists('/var/run/at_renderer/'):
+            os.makedirs('/var/run/at_renderer/')
+
+        with open('/var/run/at_renderer/pidfile.pid', 'w') as f:
+            f.write(str(os.getpid()))
+    except PermissionError:
+        pass
+
     args = get_args()
     renderer = await get_renderer()
 
