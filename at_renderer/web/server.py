@@ -41,9 +41,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory=os.path.join(CURRENT_FILE_PATH.parent, 'frontend/build'))
-app.mount("/static", StaticFiles(directory=os.path.join(CURRENT_FILE_PATH.parent,
-          "frontend/build/static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(CURRENT_FILE_PATH.parent, "frontend/build"))
+app.mount(
+    "/static", StaticFiles(directory=os.path.join(CURRENT_FILE_PATH.parent, "frontend/build/static")), name="static"
+)
 
 
 # WebSocket manager
@@ -90,47 +91,50 @@ async def get_renderer():
 
 @app.websocket("/api/ws/")
 async def websocket_endpoint(websocket: WebSocket, auth_token: str = Query(...)):
+    renderer = await get_renderer()
+    auth_token_or_user_id = await renderer.get_user_id_or_token(auth_token, raize_on_failed=False)
     session_id = str(uuid4())
-    await manager.connect(auth_token, session_id, websocket)
+    await manager.connect(auth_token_or_user_id, session_id, websocket)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(auth_token, session_id)
+        manager.disconnect(auth_token_or_user_id, session_id)
 
 
 @app.get("/api/page")
 async def page(*, auth_token: str) -> PageDict:
     renderer = await get_renderer()
     try:
-        page = renderer.get_page(auth_token=auth_token)
+        page = await renderer.get_page(auth_token=auth_token)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_425_TOO_EARLY, detail=str(e))
     return page
 
 
-@app.post('/api/exec_method')
+@app.post("/api/exec_method")
 async def exec_method(data: ExecMetod) -> ExecMethodResult:
     renderer = await get_renderer()
     try:
-        result = await renderer.exec_external_method(data.component, data.method, data.kwargs, auth_token=data.auth_token)
+        result = await renderer.exec_external_method(
+            data.component, data.method, data.kwargs, auth_token=data.auth_token
+        )
     except ATQueueException as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e.__dict__)
-    return {'result': result}
+    return {"result": result}
 
 
-@app.get('/{path:path}')
+@app.get("/{path:path}")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 async def main():
-
     try:
-        if not os.path.exists('/var/run/at_renderer/'):
-            os.makedirs('/var/run/at_renderer/')
+        if not os.path.exists("/var/run/at_renderer/"):
+            os.makedirs("/var/run/at_renderer/")
 
-        with open('/var/run/at_renderer/pidfile.pid', 'w') as f:
+        with open("/var/run/at_renderer/pidfile.pid", "w") as f:
             f.write(str(os.getpid()))
     except PermissionError:
         pass
@@ -143,8 +147,8 @@ async def main():
     if not renderer.started:
         renderer_task = loop.create_task(renderer.start())
 
-    server_host = args.get('server_host', '127.0.0.1')
-    server_port = args.get('server_port', 8000)
+    server_host = args.get("server_host", "127.0.0.1")
+    server_port = args.get("server_port", 8000)
 
     if not isinstance(server_port, int):
         server_port = int(server_port)
@@ -153,15 +157,15 @@ async def main():
     # config.bind = [f"{server_host}:{server_port}"]
     # loop.create_task(serve(app, config=config))
 
-    config = UviConfig(app, server_host, server_port, loop=loop, ws='websockets')
+    config = UviConfig(app, server_host, server_port, loop=loop, ws="websockets")
     server = Server(config=config)
     loop.create_task(server.serve())
 
     try:
-        if not os.path.exists('/var/run/at_renderer/'):
-            os.makedirs('/var/run/at_renderer/')
+        if not os.path.exists("/var/run/at_renderer/"):
+            os.makedirs("/var/run/at_renderer/")
 
-        with open('/var/run/at_renderer/pidfile.pid', 'w') as f:
+        with open("/var/run/at_renderer/pidfile.pid", "w") as f:
             f.write(str(os.getpid()))
     except PermissionError:
         pass
@@ -169,5 +173,6 @@ async def main():
     if renderer_task is not None:
         await renderer_task
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())
