@@ -176,7 +176,11 @@ export default ({ frames, setFrames }) => {
 
                     messageCaller({
                         title: data.title || "",
-                        content: data.message,
+                        content: (
+                            <Typography.Paragraph>
+                                <pre>{data.message}</pre>
+                            </Typography.Paragraph>
+                        ),
                         okText: "Ок",
                         cancelText: "Закрыть",
                     });
