@@ -70,7 +70,16 @@ const FrameRow = ({ row }) => {
         <Row {...row.props}>
             {row.cols.map((col) => (
                 <Col {...col.props}>
-                    <iframe style={{ borderWidth: 0, padding: 0 }} height={"100%"} width={"100%"} src={col.src} id={col.frame_id} />
+                    <iframe
+                        style={{ borderWidth: 0, padding: 0 }}
+                        height={"100%"}
+                        width={"100%"}
+                        src={col.src
+                            .replace(/%location\.host%/g, window.location.host)
+                            .replace(/%location\.port%/g, window.location.port)
+                            .replace(/%location\.protocol%/g, window.location.protocol)}
+                        id={col.frame_id}
+                    />
                 </Col>
             ))}
         </Row>

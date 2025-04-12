@@ -23,8 +23,8 @@ const Main = () => {
                 const body = {};
                 const url = process.env.REACT_APP_API_URL || "";
                 body.auth_token = params.get("auth_token");
-                body.component = 'ATController';
-                body.method = 'handle_event'
+                body.component = "ATController";
+                body.method = "handle_event";
                 body.kwargs = { event: e.data.event, data: e.data.data, frames };
                 fetch(`${url}/api/exec_method`, {
                     method: "POST",
@@ -33,7 +33,6 @@ const Main = () => {
                     },
                     body: JSON.stringify(body),
                 });
-
             }
         };
         window.addEventListener("message", messageListener.current);
