@@ -75,6 +75,7 @@ const FrameRow = ({ row }) => {
                         height={"100%"}
                         width={"100%"}
                         src={col.src
+                            .replace(/%location\.hostname%/g, window.location.hostname)
                             .replace(/%location\.host%/g, window.location.host)
                             .replace(/%location\.port%/g, window.location.port)
                             .replace(/%location\.protocol%/g, window.location.protocol)}
