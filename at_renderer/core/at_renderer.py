@@ -42,7 +42,8 @@ class ATRenderer(ATComponent):
         return True
 
     async def check_configured(self, *args, auth_token: str = None, **kwargs) -> bool:
-        return auth_token in self.pages
+        auth_token_or_user_id = await self.get_user_id_or_token(auth_token, raize_on_failed=False)
+        return auth_token_or_user_id in self.pages
 
     @authorized_method
     async def render_page(self, page: PageDict, auth_token: str) -> bool:
@@ -65,8 +66,9 @@ class ATRenderer(ATComponent):
     async def show_message(
         self, message: str, title: str = "", message_type: str = "info", modal: bool = True, auth_token: str = None
     ) -> str:
+        auth_token_or_user_id = await self.get_user_id_or_token(auth_token, raize_on_failed=False)
         await self.websocket_manager.send_message(
-            auth_token,
+            auth_token_or_user_id,
             json.dumps(
                 {
                     "type": "message",
