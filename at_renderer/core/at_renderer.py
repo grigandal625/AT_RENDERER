@@ -49,8 +49,8 @@ class ATRenderer(ATComponent):
         auth_token_or_user_id = await self.get_user_id_or_token(auth_token, raize_on_failed=False)
 
         self.pages[auth_token_or_user_id] = Page(**page)
-        res = self.pages[auth_token].__dict__
-        await self.websocket_manager.send_message(auth_token, json.dumps(res))
+        res = self.pages[auth_token_or_user_id].__dict__
+        await self.websocket_manager.send_message(auth_token_or_user_id, json.dumps(res))
         return True
 
     @authorized_method
