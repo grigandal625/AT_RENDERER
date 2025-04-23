@@ -30,7 +30,14 @@ export default () => {
     };
 
     const view = docs ? (
-        <MarkdownPreview source={docs} style={{ padding: 16 }} />
+        <MarkdownPreview
+            source={docs
+                .replace(/%location\.hostname%/g, window.location.hostname)
+                .replace(/%location\.host%/g, window.location.host)
+                .replace(/%location\.port%/g, window.location.port)
+                .replace(/%location\.protocol%/g, window.location.protocol)}
+            style={{ padding: 16 }}
+        />
     ) : (
         <Empty style={{ padding: 50 }} description="Нет содержимого для просмотра">
             <Button onClick={() => switchMode(docs)} icon={<EditOutlined />}>
