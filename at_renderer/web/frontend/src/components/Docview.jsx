@@ -4,12 +4,22 @@ import { EyeOutlined, EditOutlined } from "@ant-design/icons";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { useSearchParams } from "react-router-dom";
 
+const base64ToUtf8 = (base64Str) => {
+    // Decode Base64 to binary, then to UTF-8
+    const binaryStr = window.atob(base64Str);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+    }
+    return new TextDecoder('utf-8').decode(bytes);
+}
+
 export default () => {
     const [form] = Form.useForm();
     const [search, setSearch] = useSearchParams();
 
     const viewing = Boolean(search.get("viewing"));
-    const docs = search.get("docs") ? window.atob(search.get("docs")) : undefined;
+    const docs = search.get("docs") ? base64ToUtf8(search.get("docs")) : undefined;
     const asFrame = search.get("asFrame");
 
     form.setFieldValue("docs", docs);
