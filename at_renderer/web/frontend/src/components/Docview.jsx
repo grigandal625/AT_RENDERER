@@ -3,6 +3,7 @@ import { Form, FloatButton, Button, Empty } from "antd";
 import { EyeOutlined, EditOutlined } from "@ant-design/icons";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { useSearchParams } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 function base64ToUtf8(base64Str) {
     // Decode Base64 to binary, then to UTF-8
@@ -18,8 +19,14 @@ export default () => {
     const [form] = Form.useForm();
     const [search, setSearch] = useSearchParams();
 
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+
     const viewing = Boolean(search.get("viewing"));
-    const docs = search.get("docs") ? base64ToUtf8(search.get("docs")) : undefined;
+    const docs = search.get("docs") ? base64ToUtf8(window.location.search
+        .split('docs=')[1]
+        ?.split('&')[0]) : undefined;
     const asFrame = search.get("asFrame");
 
     form.setFieldValue("docs", docs);
