@@ -9,7 +9,7 @@ export default () => {
     const [search, setSearch] = useSearchParams();
 
     const viewing = Boolean(search.get("viewing"));
-    const docs = search.get("docs") ? window.decodeURIComponent(search.get("docs")) : undefined;
+    const docs = search.get("docs") ? window.atob(search.get("docs")) : undefined;
     const asFrame = search.get("asFrame");
 
     form.setFieldValue("docs", docs);
