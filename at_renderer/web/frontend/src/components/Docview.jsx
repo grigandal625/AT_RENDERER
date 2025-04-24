@@ -4,7 +4,7 @@ import { EyeOutlined, EditOutlined } from "@ant-design/icons";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { useSearchParams } from "react-router-dom";
 
-const base64ToUtf8 = (base64Str) => {
+function base64ToUtf8(base64Str) {
     // Decode Base64 to binary, then to UTF-8
     const binaryStr = window.atob(base64Str);
     const bytes = new Uint8Array(binaryStr.length);
