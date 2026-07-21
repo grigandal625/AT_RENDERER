@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional, NotRequired
 from typing import List
 from typing import TypedDict
 from typing import Union
@@ -37,7 +37,7 @@ class Fetch:
     url: str
     label: str
     options: Any = None
-    framedata_field: Union[str, None] = None
+    framedata_field: Optional[str] = None
     props: Any = None
 
 
@@ -47,16 +47,16 @@ class ComponentMethod:
     label: str
     component: str
     method: str
-    framedata_field: Union[str, None] = None
+    framedata_field: Optional[str] = None
     kwargs: Any = None
-    props: Union[dict, None] = None
+    props: Optional[dict] = None
 
 
 @dataclass
 class Panel:
     label: str
     links: List[Union[Link, Fetch, ComponentMethod]]
-    subtitle: Union[str, None] = None
+    subtitle: Optional[str] = None
 
 
 @dataclass
@@ -66,7 +66,7 @@ class HandlerFetch:
     test: str
     url: str
     options: Any = None
-    framedata_field: Union[str, None] = None
+    framedata_field: Optional[str] = None
     props: Any = None
 
 
@@ -77,29 +77,29 @@ class HandlerComponentMethod:
     test: str
     component: str
     method: str
-    framedata_field: Union[str, None] = None
+    framedata_field: Optional[str] = None
     kwargs: Any = None
-    props: Union[dict, None] = None
+    props: Optional[dict] = None
 
 
 @dataclass
 class Page:
     grid: Grid
-    header: Union[Panel, None] = None
-    control: Union[Panel, None] = None
-    footer: Union[Panel, None] = None
+    header: Optional[Panel] = None
+    control: Optional[Panel] = None
+    footer: Optional[Panel] = None
     handlers: Union[List[Union[HandlerFetch, HandlerComponentMethod]], None] = None
 
 
 class ColDict(TypedDict):
     src: str
     frame_id: str
-    props: Union[dict, None]
+    props: NotRequired[dict]
 
 
 class RowDict(TypedDict):
     cols: List[ColDict]
-    props: Union[dict, None]
+    props: NotRequired[dict]
 
 
 class GridDict(TypedDict):
@@ -110,16 +110,16 @@ class LinkDict(TypedDict):
     type: str
     href: str
     label: str
-    props: Union[dict, None]
+    props: NotRequired[dict]
 
 
 class FetchDict(TypedDict):
     type: str
     url: str
     label: str
-    options: Union[dict, None]
-    framedata_field: Union[str, None]
-    props: Union[dict, None]
+    options: NotRequired[dict]
+    framedata_field: NotRequired[str]
+    props: NotRequired[dict]
 
 
 class ComponentMethodDict(TypedDict):
@@ -127,15 +127,15 @@ class ComponentMethodDict(TypedDict):
     label: str
     component: str
     method: str
-    framedata_field: Union[str, None]
-    kwargs: Union[dict, None]
-    props: Union[dict, None]
+    framedata_field: NotRequired[str]
+    kwargs: NotRequired[dict]
+    props: NotRequired[dict]
 
 
 class PanelDict(TypedDict):
     label: str
-    links: List[Union[LinkDict, FetchDict]]
-    subtitle: Union[str, None]
+    links: List[Union[LinkDict, FetchDict, ComponentMethodDict]]
+    subtitle: NotRequired[str]
 
 
 class HandlerFetchDict(TypedDict):
@@ -143,9 +143,9 @@ class HandlerFetchDict(TypedDict):
     frame_id: str
     test: str
     url: str
-    options: Union[dict, None]
-    framedata_field: Union[str, None]
-    props: Union[dict, None]
+    options: NotRequired[dict]
+    framedata_field: NotRequired[str]
+    props: NotRequired[dict]
 
 
 class HandlerComponentMethodDict(TypedDict):
@@ -154,14 +154,14 @@ class HandlerComponentMethodDict(TypedDict):
     test: str
     component: str
     method: str
-    framedata_field: Union[str, None]
-    kwargs: Union[dict, None]
-    props: Union[dict, None]
+    framedata_field: NotRequired[str]
+    kwargs: NotRequired[dict]
+    props: NotRequired[dict]
 
 
 class PageDict(TypedDict):
     grid: GridDict
-    header: PanelDict
-    control: PanelDict
-    footer: PanelDict
+    header: NotRequired[PanelDict]
+    control: NotRequired[PanelDict]
+    footer: NotRequired[PanelDict]
     handlers: Union[List[Union[HandlerFetchDict, HandlerComponentMethodDict]], None]

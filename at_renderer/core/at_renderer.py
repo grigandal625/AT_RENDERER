@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, Optional
 from typing import TYPE_CHECKING
 from typing import Union
 
@@ -55,7 +55,7 @@ class ATRenderer(ATComponent):
         return True
 
     @authorized_method
-    async def get_page(self, auth_token: str) -> Union[PageDict, None]:
+    async def get_page(self, auth_token: str) -> Optional[PageDict]:
         auth_token_or_user_id = await self.get_user_id_or_token(auth_token, raize_on_failed=False)
         page = self.pages.get(auth_token_or_user_id, None)
         if page is None:
